@@ -1,10 +1,21 @@
 import datetime
 #import * means import everything from peewee
 from peewee import *
-DATABASE = SqliteDatabase('clouds.sqlite')
+from flask_login import UserMixin
+# DATABASE = SqliteDatabase('clouds.sqlite')
+DATABASE = PostgresqlDatabase('cloudApp')
+
+class User(UserMixin, Model):
+    username: CharField(unique = True)
+    email = CharField(unique = True)
+    password = CharField()
+#making db accessible to class
+    class Meta:
+        database = DATABASE
+
 
 class Cloud(Model):
-    name = CharField()
+    name = ForeignKeyField(User, backref = 'clouds')
     genus = CharField()
     form_level = CharField()
     created_at = DateTimeField(default=datetime.datetime.now)
@@ -22,6 +33,6 @@ class Cloud(Model):
  # 
 def initialize():
     DATABASE.connect()
-    DATABASE.create_tables([Cloud], safe=True)
+    DATABASE.create_tables([User, Cloud], safe=True)
     print("Cloud TABLES Created")
     DATABASE.close()
