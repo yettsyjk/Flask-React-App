@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, g
 from flask_cors import CORS
+from flask_origin import LoginManager
 #jsonify let\'s us send complex data types
 #initialize an instancd of the Flask Class
 #import global proxy from Flask
@@ -7,12 +8,37 @@ from flask_cors import CORS
 
 #This starts the website!
 app = Flask(__name__)
+app.secret_key = "anysecretkey"
+login_manager = LoginManager()
+login_manager.init_app(app)
+
 #import the models
 import models
 
 #look inside resources directory and look for file clouds and import clouds
 from resources.users import users
 from resources.clouds import clouds
+
+#login
+@login_manager.user_loader
+def load_user(userid):
+    try:
+        return models.User.get(models.User.id == userid)
+    except models.DoesNotExist:
+        return None
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    return jsonify(
+        data = {
+            'error': 'User not logged in.'
+        },
+        status = {
+            'code:': 401,
+            'message: ': 'You must be logged in to access that resource.'
+        }
+    )
+
 #CORS whitelist
 CORS(users, origins = ['http://localhost:3000'], supports_credentials = True)
 CORS(clouds, origins = ['http://localhost:3000'], supports_credentials = True)
