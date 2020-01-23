@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, g
+from flask_login import LoginManager
 from flask_cors import CORS
-from flask_origin import LoginManager
+
 #jsonify let\'s us send complex data types
 #initialize an instancd of the Flask Class
 #import global proxy from Flask
@@ -8,7 +9,7 @@ from flask_origin import LoginManager
 
 #This starts the website!
 app = Flask(__name__)
-app.secret_key = "anysecretkey"
+app.secret_key = 'anysecretkey'
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -58,25 +59,25 @@ def before_request():
 @app.after_request
 def after_request(response):
     """Close the database connection after each request."""
-    g.db = close()
+    g.db.close()
     return response
 
 #default URL ending in "localhost:8000/recipes/"
 @app.route('/')
 def index():
-    my_list = ["let", "me", "start", "coding"]
+    # my_list = ["let", "me", "start", "coding"]
     #the return determines what is displayed
-    return my_list
+    return 'hi'
 
-#CREATE NEW ROUTE
-@app.route('/json')
-def cloud():
-    return jsonsify(name="Cumulus", genus="Cumulus")
+# #CREATE NEW ROUTE
+# @app.route('/json')
+# def cloud():
+#     return jsonsify(name="Cumulus", genus="Cumulus")
 
-#
-@app.route('/sayhi/<username>')
-def hello(username):
-    return "Hello {}".format(username)
+# #
+# @app.route('/sayhi/<username>')
+# def hello(username):
+#     return "Hello {}".format(username)
 
 #run the app when program starts
 DEBUG = True

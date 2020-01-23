@@ -7,7 +7,7 @@ import models
 
 users = Blueprint('users', 'users')
 
-#register route
+#register route url localhost:8000/api/v1/register/
 @users.route('/register', methods=['POST'])
 def register():
     payload = request.get_json()
@@ -24,14 +24,17 @@ def register():
         del user_dict['password']
         return jsonify(data = user_dict, status= {'code: ': 200, 'message: ': f"Successfully registered {user_dict['email']}"})
 #login route with accessibility requirement
+#http://localhost:8000/api/v1/login/
 @users.route('/login', methods=['POST'])
 def login():
     payload = request.get_json()
     payload['email'].lower()
+    print(payload)
     try:
         user = models.User.get(models.User.email == payload['email'])
         user_dict = model_to_dict(user)
-        if(check_password_hash(user_dict['password'] == payload['password'])):
+        print('hitting the login route', user_dict)
+        if(check_password_hash(user_dict['password'], payload['password'])):
             del user_dict['password']
             login_user(user)
             return jsonify(data = user_dict, status = {'code: ': 200, 'message: ': f"Successfully logged in {user_dict['email']}"})

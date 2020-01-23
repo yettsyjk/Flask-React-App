@@ -9,14 +9,15 @@ clouds = Blueprint('clouds', 'clouds')
 ###########INDEX ROUTE###########
 #url localhost:8000/api/v1/clouds
 @clouds.route('/', methods=['GET'])
+@login_required
 #run function get all clouds
 def get_all_clouds():
     try:
         #list of clouds dict we set as data
-        clouds = [model_to_dict(cloud) for cloud in models.Cloud.select().where(models.Dog.owner_id == current_user.id)]
+        clouds = [model_to_dict(cloud) for cloud in models.Cloud.select().where(models.Cloud.owner == current_user.id)]
         print(clouds)
         for cloud in clouds:
-            #code goes here not sure for what though
+            cloud['owner'].pop('password')
         return jsonify(data=clouds, status={"code: ": 200, "message: ": "Success"})
     except models.DoesNotExist:
         return jsonify(data={}, status={"code: ": 401, "message: ": "Error getting the resources"})
@@ -26,7 +27,8 @@ def get_all_clouds():
 def create_cloud():
     try:
         payload = request.get_json()
-        payload['owner'] = current_user.id
+        payload['owner'] = int(current_user.id)
+        print(payload)
         cloud = models.Cloud.create(**payload)
         print(cloud.__dict__)
         cloud_dict = model_to_dict(cloud)
@@ -41,7 +43,7 @@ def get_one_cloud(id):
         cloud = models.Cloud.get_by_id(id)
         print(cloud)
         
-        if not current_user.is_authencated:
+        if not current_user.is_authenticated:
             return jsonify(data = {
                 'city': cloud.city,
                 'country': cloud.country,
@@ -49,7 +51,7 @@ def get_one_cloud(id):
                 'temp': cloud.temp
             }, status = {
                 'code: ': 200,
-                'message': "Registered users can access more info about this dog"
+                'message': "Registered users can access more info about this weather"
                 })
         else: 
             cloud_dict = model_to_dict(cloud)
@@ -68,9 +70,10 @@ def update_cloud(id):
         payload = request.get_json()
         query = models.Cloud.update(**payload).where(models.Cloud.id == id)
         query.execute()
-        return jsonify(data= model_to_dict(models.Cloud.get_by_id(id)), status={'code: ': 200, 'message: ': 'resources updated successfully'})
+        updated_cloud = model_to_dict(models.Cloud.get_by_id(id))
+        return jsonify(data= updated_cloud, status={'code: ': 200, 'message: ': 'resources updated successfully'})
     except models.DoesNotExist:
-        return jsonify(data={}, status={'code: ': 401, 'message: ': 'Error deleting the resource'})
+        return jsonify(data={}, status={'code: ': 400, 'message: ': 'Error updating one resource'})
 ##########DELETE ROUTE###################
 @clouds.route('/<id>', methods=['DELETE']) 
 @login_required

@@ -2,8 +2,9 @@ import datetime
 #import * means import everything from peewee
 from peewee import *
 from flask_login import UserMixin
-DATABASE = SqliteDatabase('clouds.sqlite')
-# DATABASE = PostgresqlDatabase('cloud_app')
+
+DATABASE = SqliteDatabase('clouds1.sqlite')
+# DATABASE = PostgresqlDatabase('clouds')
 
 class User(UserMixin, Model):
     username: CharField(unique = True)
@@ -15,13 +16,13 @@ class User(UserMixin, Model):
 
 
 class Cloud(Model):
-    name = CharField()
-    weatherData = ForeignKeyField(User, backref = 'clouds')
+    # owner = CharField()
     city = CharField()
     country = CharField()
     weather = CharField()
     temp = CharField()
     created_at = DateTimeField(default=datetime.datetime.now)
+    owner = ForeignKeyField(User, backref = 'clouds')
     
 #When Python creates a class object, special construction instructions can be provided. Since the database isn't part of the class itself, this class constructor 
 ##information is provided through the special Meta class
