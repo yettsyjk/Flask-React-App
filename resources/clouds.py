@@ -9,11 +9,13 @@ clouds = Blueprint('clouds', 'clouds')
 ###########INDEX ROUTE###########
 #url localhost:8000/api/v1/clouds
 @clouds.route('/', methods=['GET'])
-@login_required
+# @login_required
 #run function get all clouds
 def get_all_clouds():
     try:
         #list of clouds dict we set as data
+        print('cloud get hit')
+        current_user.id = 1
         clouds = [model_to_dict(cloud) for cloud in models.Cloud.select().where(models.Cloud.owner == current_user.id)]
         print(clouds)
         for cloud in clouds:
@@ -23,7 +25,7 @@ def get_all_clouds():
         return jsonify(data={}, status={"code: ": 401, "message: ": "Error getting the resources"})
 #############CREATE ROUTE##########
 @clouds.route('/', methods=['POST'])
-@login_required
+# @login_required
 def create_cloud():
     try:
         payload = request.get_json()
@@ -64,7 +66,7 @@ def get_one_cloud(id):
         return jsonify(data={}, status={"code: " : 401, 'message: ': 'Error getting the resources'})
 #############UPDATE ROUTE################
 @clouds.route('/<id>', methods=['PUT'])
-@login_required
+# @login_required
 def update_cloud(id):
     try:
         payload = request.get_json()
@@ -76,7 +78,7 @@ def update_cloud(id):
         return jsonify(data={}, status={'code: ': 400, 'message: ': 'Error updating one resource'})
 ##########DELETE ROUTE###################
 @clouds.route('/<id>', methods=['DELETE']) 
-@login_required
+# @login_required
 def deleted_cloud(id):
     try:
         query = models.Cloud.delete().where(models.Cloud.id == id)

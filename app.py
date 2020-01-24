@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, g
-from flask_login import LoginManager
 from flask_cors import CORS
-
+from flask_login import LoginManager
+#Load and initialize all modules in app.py
 #jsonify let\'s us send complex data types
 #initialize an instancd of the Flask Class
 #import global proxy from Flask
