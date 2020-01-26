@@ -16,9 +16,6 @@ login_manager.init_app(app)
 #import the models
 import models
 
-#look inside resources directory and look for file clouds and import clouds
-from resources.users import users
-from resources.clouds import clouds
 
 #login
 @login_manager.user_loader
@@ -39,15 +36,13 @@ def unauthorized():
             'message: ': 'You must be logged in to access that resource.'
         }
     )
-
+#RESOURCES CONTROLLERS
+#look inside resources directory and look for file birds and import birds
+from resources.users import users
+from resources.birds import birds
 #CORS whitelist
-CORS(users, origins = ['http://localhost:3000'], supports_credentials = True)
-CORS(clouds, origins = ['http://localhost:3000'], supports_credentials = True)
-
-#localhost:8000/api/v1/clouds
-app.register_blueprint(users, url_prefix = '/api/v1/users')
-app.register_blueprint(clouds, url_prefix = '/api/v1/clouds')
-
+CORS(users, origins=['http://localhost:3000'], supports_credentials=True)
+CORS(birds, origins=['http://localhost:3000'], supports_credentials=True)
 
 #set up the connection and close logic for requests
 @app.before_request
@@ -55,6 +50,10 @@ def before_request():
     """Connnect to the database before each request."""
     g.db = models.DATABASE
     g.db.connect()
+#localhost:8000/api/v1/birds
+app.register_blueprint(birds, url_prefix='/api/v1/birds')
+app.register_blueprint(users, url_prefix='/api/v1/users')
+
 #always close the connection
 @app.after_request
 def after_request(response):
@@ -71,7 +70,7 @@ def index():
 
 # #CREATE NEW ROUTE
 # @app.route('/json')
-# def cloud():
+# def birds():
 #     return jsonsify(name="Cumulus", genus="Cumulus")
 
 # #
